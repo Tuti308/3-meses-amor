@@ -72,7 +72,8 @@ body {
 .card-container {
   display: none;
   position: relative;
-  width: 320px;
+  width: 90%;
+  max-width: 360px;
   height: 220px;
   perspective: 1000px;
   z-index: 2;
@@ -85,7 +86,6 @@ body {
   align-items: center;
   padding: 15px;
   text-align: center;
-  font-size: 18px;
   line-height: 1.3;
   position: absolute;
   width: 100%;
@@ -102,11 +102,16 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 5px;
+  text-align: center;
+  font-size: clamp(12px, 4vw, 20px);
+  overflow-wrap: break-word;
 }
 .card-ref {
-  font-size: 14px;
-  margin-top: 10px;
+  font-size: clamp(10px, 3vw, 16px);
+  margin-top: 5px;
   color: #555;
+  text-align: center;
 }
 
 /* Pilha */
@@ -136,7 +141,7 @@ body {
 /* Botão */
 #nextBtn {
   position: fixed;
-  bottom: 30px;
+  bottom: 20px;
   background: #ff4d6d;
   color: white;
   border: none;
@@ -184,8 +189,10 @@ body {
   transform: scale(1);
 }
 .photo-frame {
-  width: 280px;
-  height: 280px;
+  width: 80%;
+  max-width: 280px;
+  height: 0;
+  padding-bottom: 80%;
   border-radius: 50%;
   background: #fff;
   border: 4px solid #ff4d6d;
@@ -194,7 +201,7 @@ body {
   margin-bottom: 20px;
 }
 .final-message {
-  font-size: 30px;
+  font-size: clamp(20px,5vw,36px);
   font-weight: bold;
   color: #ff1a4d;
 }
@@ -206,7 +213,6 @@ body {
 <div id="lock" class="lock">🔒</div>
 
 <div class="card-container" id="cards">
-  <!-- Cards poéticos com referência na parte inferior -->
   <div class="card"><div class="card-text">Teus olhos são meus livros. Que livro há aí melhor, em que melhor se leia a página do amor?</div><div class="card-ref"><i>- Machado de Assis, "Falenas"</i></div></div>
   <div class="card"><div class="card-text">O amor é uma luz que não deixa escurecer a vida.</div><div class="card-ref"><i>- Camilo Castelo Branco</i></div></div>
   <div class="card"><div class="card-text">Eu te amo e te amarei até morrer. E se houver vida após a morte, eu te amarei então.</div><div class="card-ref"><i>- Fala minha</i></div></div>
@@ -297,7 +303,7 @@ nextBtn.addEventListener("click",()=>{
     resetCards();
 
     if(firstCard.textContent.includes("O dia mais feliz")){
-      // Crossfade final
+      // Fade out cards
       cards.style.transition="opacity 1s ease";
       nextBtn.style.transition="opacity 1s ease";
       cards.style.opacity=0;
@@ -309,12 +315,13 @@ nextBtn.addEventListener("click",()=>{
 
         photo1.style.display="block";
         photo2.style.display="block";
-        setTimeout(()=>{photo1.style.opacity=1; photo2.style.opacity=1;
+        setTimeout(()=>{
+          photo1.style.opacity=1; photo2.style.opacity=1;
           photo1.style.left="calc(50% - 160px)";
           photo2.style.right="calc(50% - 160px)";
         },50);
 
-        // Crossfade fotos → final
+        // Fotos → final
         setTimeout(()=>{
           photo1.style.transition="opacity 1s ease, left 2s ease-in-out";
           photo2.style.transition="opacity 1s ease, right 2s ease-in-out";
@@ -322,8 +329,11 @@ nextBtn.addEventListener("click",()=>{
           photo2.style.opacity=0;
 
           finalScreen.style.display="flex";
-          setTimeout(()=>{ finalScreen.classList.add("show"); createConfetti(); 
-          document.getElementById("photoFrame").style.backgroundImage="url('IMG-20250803-WA0061.jpg')"; },500);
+          setTimeout(()=>{ 
+            finalScreen.classList.add("show"); 
+            createConfetti(); 
+            document.getElementById("photoFrame").style.backgroundImage="url('IMG-20250803-WA0061.jpg')";
+          },500);
         },2000);
 
       },1000);
@@ -333,4 +343,3 @@ nextBtn.addEventListener("click",()=>{
 </script>
 </body>
 </html>
-
