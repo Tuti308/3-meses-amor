@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cartinhas ❤️</title>
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  background: #ffe6f0;
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  position: relative;
+}
+
+/* Corações atrás dos cards */
+.hearts {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+.hearts span {
+  position: absolute;
+  display: block;
+  color: red;
+  font-size: 20px;
+  animation: float 6s linear infinite;
+  opacity: 0.7;
+}
+@keyframes float {
+  0% { transform: translateY(100vh) scale(1); opacity:0; }
+  50% { opacity:1; }
+  100% { transform: translateY(-10vh) scale(1.5); opacity:0; }
+}
+
+/* Confetes da tela final */
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  z-index: 5;
+  top: -10px;
+  animation: confettiFall linear infinite;
+}
+@keyframes confettiFall {
+  0% { transform: translateY(0) rotate(0deg); opacity:1; }
+  100% { transform: translateY(100vh) rotate(360deg); opacity:0; }
+}
+
+/* Cadeado maior */
+.lock {
+  font-size: 150px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.5s ease;
+  z-index: 2;
+  position: relative;
+}
+.lock.open { transform: rotate(-20deg); color: green; }
+
+/* Cards */
+.card-container {
+  display: none;
+  position: relative;
+  width: 320px;
+  height: 220px;
+  perspective: 1000px;
+  z-index: 2;
+  transition: opacity 1s ease;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  text-align: center;
+  font-size: 18px;
+  line-height: 1.3;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.3);
+  transition: transform 0.6s ease, opacity 0.6s ease;
+}
+
+/* Texto principal e referência */
+.card-text {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-ref {
+  font-size: 14px;
+  margin-top: 10px;
+  color: #555;
+}
+
+/* Pilha */
+.card:nth-child(1){transform: translateX(0); z-index:12;}
+.card:nth-child(2){transform: translateX(10px); z-index:11;}
+.card:nth-child(3){transform: translateX(20px); z-index:10;}
+.card:nth-child(4){transform: translateX(30px); z-index:9;}
+.card:nth-child(5){transform: translateX(40px); z-index:8;}
+.card:nth-child(6){transform: translateX(50px); z-index:7;}
+.card:nth-child(7){transform: translateX(60px); z-index:6;}
+.card:nth-child(8){transform: translateX(70px); z-index:5;}
+.card:nth-child(9){transform: translateX(80px); z-index:4;}
+.card:nth-child(10){transform: translateX(90px); z-index:3;}
+
+/* Animação levantar e ir pro fundo */
+.move-to-back {
+  animation: liftAndBack 1s ease forwards;
+  z-index: 100 !important;
+}
+@keyframes liftAndBack {
+  0% { transform: translateX(0) translateY(0) rotate(0deg); opacity:1; }
+  30% { transform: translateY(-60px) rotate(-5deg); }
+  70% { transform: translateX(120%) translateY(-40px) rotate(10deg); opacity:0; }
+  100% { transform: translateX(0) translateY(0) rotate(0deg); opacity:0; }
+}
+
+/* Botão */
+#nextBtn {
+  position: fixed;
+  bottom: 30px;
+  background: #ff4d6d;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 20px;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 3;
+  display: none;
+  transition: opacity 1s ease;
+}
+#nextBtn:hover { background: #e63950; }
+
+/* Fotos animadas */
+.photo-animate {
+  position: fixed;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  transition: all 2s ease-in-out, opacity 1s ease;
+  display:none;
+  opacity:0;
+}
+
+/* Tela final com fade-in e foto maior */
+.final-screen {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  z-index: 6;
+  opacity:0;
+  transform: scale(0.8);
+  transition: all 1s ease-in-out;
+}
+.final-screen.show {
+  display:flex;
+  opacity:1;
+  transform: scale(1);
+}
+.photo-frame {
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: #fff;
+  border: 4px solid #ff4d6d;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 20px;
+}
+.final-message {
+  font-size: 30px;
+  font-weight: bold;
+  color: #ff1a4d;
+}
+</style>
+</head>
+<body>
+
+<div class="hearts" id="hearts"></div>
+<div id="lock" class="lock">🔒</div>
+
+<div class="card-container" id="cards">
+  <!-- Cards poéticos com referência na parte inferior -->
+  <div class="card"><div class="card-text">Teus olhos são meus livros. Que livro há aí melhor, em que melhor se leia a página do amor?</div><div class="card-ref"><i>- Machado de Assis, "Falenas"</i></div></div>
+  <div class="card"><div class="card-text">O amor é uma luz que não deixa escurecer a vida.</div><div class="card-ref"><i>- Camilo Castelo Branco</i></div></div>
+  <div class="card"><div class="card-text">Eu te amo e te amarei até morrer. E se houver vida após a morte, eu te amarei então.</div><div class="card-ref"><i>- Fala minha</i></div></div>
+  <div class="card"><div class="card-text">Você é a pessoa mais incrível que já conheci.</div><div class="card-ref"><i>- Fala minha</i></div></div>
+  <div class="card"><div class="card-text">Eu quero ficar com você o máximo que eu puder.</div><div class="card-ref"><i>- Nicholas Sparks, "Querido John"</i></div></div>
+  <div class="card"><div class="card-text">Eu me descubro ainda mais feliz a cada pedaço seu e de tudo o que é seu.</div><div class="card-ref"><i>- Fala minha</i></div></div>
+  <div class="card"><div class="card-text">Você transforma dias comuns em aventuras memoráveis.</div><div class="card-ref"><i>- Hollow Knight</i></div></div>
+  <div class="card"><div class="card-text">Meu coração bate só por você, em silêncio e gritando amor.</div><div class="card-ref"><i>- Fala minha</i></div></div>
+  <div class="card"><div class="card-text">Seja qual for o caminho, quero trilhá-lo sempre ao seu lado.</div><div class="card-ref"><i>- Homem-Aranha</i></div></div>
+  <div class="card"><div class="card-text">O dia mais feliz seu será o mesmo que o meu.</div><div class="card-ref"><i>- Fala minha</i></div></div>
+</div>
+
+<button id="nextBtn">➡️ Próximo</button>
+
+<div id="photo1" class="photo-animate" style="left:-200px; background-image:url('https://placekitten.com/300/300');"></div>
+<div id="photo2" class="photo-animate" style="right:-200px; background-image:url('https://placekitten.com/301/301');"></div>
+
+<div class="final-screen" id="finalScreen">
+  <div class="photo-frame" id="photoFrame"></div>
+  <div class="final-message">Feliz 3 meses 💝</div>
+</div>
+
+<script>
+const lock = document.getElementById("lock");
+const cards = document.getElementById("cards");
+const nextBtn = document.getElementById("nextBtn");
+const finalScreen = document.getElementById("finalScreen");
+const photo1 = document.getElementById("photo1");
+const photo2 = document.getElementById("photo2");
+
+// Corações
+function createHearts() {
+  const hearts = document.getElementById("hearts");
+  for(let i=0;i<20;i++){
+    const span=document.createElement("span");
+    span.innerHTML="❤";
+    span.style.left=Math.random()*100+"vw";
+    span.style.animationDuration=(3+Math.random()*3)+"s";
+    span.style.fontSize=(15+Math.random()*25)+"px";
+    hearts.appendChild(span);
+  }
+}
+createHearts();
+
+// Cadeado
+lock.addEventListener("click",()=>{
+  lock.textContent="🔓";
+  lock.classList.add("open");
+  setTimeout(()=>{
+    lock.style.display="none";
+    cards.style.display="block";
+    nextBtn.style.display="block";
+  },1000);
+});
+
+// Reset pilha
+function resetCards(){
+  const list=Array.from(cards.children);
+  list.forEach((card,i)=>{
+    card.style.transform=`translateX(${i*10}px)`;
+    card.style.zIndex=list.length-i;
+    card.style.opacity=1;
+  });
+}
+resetCards();
+
+// Confetes
+function createConfetti() {
+  for(let i=0;i<50;i++){
+    const c = document.createElement("div");
+    c.className="confetti";
+    c.style.left=Math.random()*100+"vw";
+    c.style.backgroundColor=`hsl(${Math.random()*360}, 100%, 50%)`;
+    c.style.animationDuration=(2+Math.random()*3)+"s";
+    document.body.appendChild(c);
+  }
+}
+
+// Avançar cards
+nextBtn.addEventListener("click",()=>{
+  const firstCard = cards.firstElementChild;
+  if(!firstCard) return;
+
+  firstCard.classList.add("move-to-back");
+  firstCard.addEventListener("animationend",()=>{
+    firstCard.classList.remove("move-to-back");
+    cards.appendChild(firstCard);
+    resetCards();
+
+    if(firstCard.textContent.includes("O dia mais feliz")){
+      // Crossfade final
+      cards.style.transition="opacity 1s ease";
+      nextBtn.style.transition="opacity 1s ease";
+      cards.style.opacity=0;
+      nextBtn.style.opacity=0;
+
+      setTimeout(()=>{
+        cards.style.display="none";
+        nextBtn.style.display="none";
+
+        photo1.style.display="block";
+        photo2.style.display="block";
+        setTimeout(()=>{photo1.style.opacity=1; photo2.style.opacity=1;
+          photo1.style.left="calc(50% - 160px)";
+          photo2.style.right="calc(50% - 160px)";
+        },50);
+
+        // Crossfade fotos → final
+        setTimeout(()=>{
+          photo1.style.transition="opacity 1s ease, left 2s ease-in-out";
+          photo2.style.transition="opacity 1s ease, right 2s ease-in-out";
+          photo1.style.opacity=0;
+          photo2.style.opacity=0;
+
+          finalScreen.style.display="flex";
+          setTimeout(()=>{ finalScreen.classList.add("show"); createConfetti(); 
+          document.getElementById("photoFrame").style.backgroundImage="url('IMG-20250803-WA0061.jpg')"; },500);
+        },2000);
+
+      },1000);
+    }
+  },{once:true});
+});
+</script>
+</body>
+</html>
